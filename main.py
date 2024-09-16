@@ -8,7 +8,7 @@ import csv
 PACKAGE_CSV = "WGUPS Package File.csv"
 ADDRESS_CSV = "WGUPS Address Table.csv"
 DISTANCE_CSV = "WGUPS Distance Table.csv"
-
+HUB_ADDRESS = "4001 South 700 East"
 
 def load_package_data():
     print("Loading package data...")
@@ -27,7 +27,7 @@ def load_package_data():
             notes = row[7]
 
             package = Package(id, address, city, state, zip_code, deadline, weight, notes)
-            package_map.add(id, package)
+            package_map[id] = package
 
 
 def load_address_data():
@@ -61,6 +61,47 @@ def distance_between(addr1, addr2):
     return distance_table[address_index_map[addr1]][address_index_map[addr2]]
 
 
+def get_swap_difference(tour, v1, v2):
+    cur_dist = distance_between(tour[v1], tour[v1 + 1]) + distance_between(tour[v2], tour[v2 + 1])
+    new_dist = distance_between(tour[v1], tour[v2]) + distance_between(tour[v1 + 1], tour[v2 + 1])
+    return new_dist - cur_dist
+
+
+def swapped_edges(tour, v1, v2):
+    new_tour = tour[:v1 + 1]
+    for i in range(v2, v1, -1):
+        new_tour.append(tour[i])
+    new_tour.extend(tour[v2 + 1:])
+    return new_tour
+        
+
+
+def two_opt_tour(packages):
+    tour = [HUB_ADDRESS]
+    length = 0
+    for package in packages:
+        tour.append(package.address)
+        length += distance_between(tour[-1], tour[-2])
+    tour.append(HUB_ADDRESS)
+    length += distance_between(tour[-1], tour[-2])
+    print(tour)
+    print(length)
+
+    improved = True
+    while improved:
+        improved = False
+        for v1 in range(len(tour) - 2):
+            for v2 in range(v1 + 1, len(tour) - 1):
+                swap_difference = get_swap_difference(tour, v1, v2)
+                if swap_difference < 0:
+                    improved = True
+                    length += swap_difference
+                    tour = swapped_edges(tour, v1, v2)
+
+    print(tour)
+    print(length)
+
+
 if __name__ == '__main__':
     package_map = OpenAddressHashTable()  # Maps package id -> Package object
     address_index_map = {}  # Maps address string -> index in distance table
@@ -70,11 +111,9 @@ if __name__ == '__main__':
     load_address_data()
     load_distance_data()
 
-    p1 = package_map.get(2)
-    p2 = package_map.get(5)
+    packages = []
+    for i in range(1, 40):
+        packages.append(package_map[i])
 
-    print(p1)
-    print(p2)
-
-    print(distance_between(p1.address, p2.address))
+    two_opt_tour(packages)
 
