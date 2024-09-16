@@ -1,0 +1,67 @@
+# A simple hash table using open addressing
+class OpenAddressHashTable:
+    INITIAL_SIZE = 16
+
+    def __init__(self):
+        self.size = 0  # The current number of items stored in the table
+        self.table = []  # Stores a tuple of (key, value) for each item in the table
+        for i in range(self.INITIAL_SIZE):
+            self.table.append(None)
+
+    # Adds an item to the hash table
+    # If the key already exists in the table, it will be overwritten
+    # Resizing occurs if the number of items exceeds half of the table's capacity to reduce collisions
+    def add(self, key, val):
+        self.size += 1
+        if self.size >= len(self.table) // 2:
+            self.__resize()
+        self.__insert(self.table, key, val)
+
+    # Deletes the item with the specified key
+    # The table size will remain the same no matter how many items are removed
+    # Raises KeyError if the key is not found
+    def remove(self, key):
+        i = self.__find_index(key)
+        self.table[i] = None
+        self.size -= 1
+
+    # Returns the value of the specified key
+    # Raises KeyError if the key is not found
+    def get(self, key):
+        i = self.__find_index(key)
+        return self.table[i][1]
+
+    # Doubles the capacity of the table and rehashes all existing items
+    def __resize(self):
+        new_cap = 2 * len(self.table)
+        new_table = []
+        for i in range(new_cap):
+            new_table.append(None)
+
+        # Rehash existing items into new table
+        for i in range(len(self.table)):
+            if self.table[i]:
+                key, val = self.table[i]
+                self.__insert(new_table, key, val)
+
+        self.table = new_table
+
+    def __insert(self, table, key, val):
+        index = hash(key) % len(table)
+
+        # Loose addressing - increment index until an empty space is found
+        while table[index]:
+            index = (index + 1) % len(table)
+
+        table[index] = (key, val)
+
+    def __find_index(self, key):
+        index = key % len(self.table)
+        while self.table[index] and self.table[index][0] != key:
+            index += 1
+
+        #Key is not present if an empty index is found before the key
+        if not self.table[index]:
+            raise KeyError
+
+        return index
