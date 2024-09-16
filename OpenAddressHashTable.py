@@ -8,11 +8,19 @@ class OpenAddressHashTable:
         for i in range(self.INITIAL_SIZE):
             self.table.append(None)
 
+    def __contains__(self, key):
+        try:
+            self.__find_index(key)
+            return True
+        except KeyError:
+            return False
+
     # Adds an item to the hash table
     # If the key already exists in the table, it will be overwritten
     # Resizing occurs if the number of items exceeds half of the table's capacity to reduce collisions
-    def add(self, key, val):
-        self.size += 1
+    def __setitem__(self, key, val):
+        if key not in self:
+            self.size += 1
         if self.size >= len(self.table) // 2:
             self.__resize()
         self.__insert(self.table, key, val)
@@ -20,14 +28,14 @@ class OpenAddressHashTable:
     # Deletes the item with the specified key
     # The table size will remain the same no matter how many items are removed
     # Raises KeyError if the key is not found
-    def remove(self, key):
+    def __delitem__(self, key):
         i = self.__find_index(key)
         self.table[i] = None
         self.size -= 1
 
     # Returns the value of the specified key
     # Raises KeyError if the key is not found
-    def get(self, key):
+    def __getitem__(self, key):
         i = self.__find_index(key)
         return self.table[i][1]
 
@@ -49,8 +57,8 @@ class OpenAddressHashTable:
     def __insert(self, table, key, val):
         index = hash(key) % len(table)
 
-        # Loose addressing - increment index until an empty space is found
-        while table[index]:
+        # Loose addressing - increment index until an empty space is found or key is found
+        while table[index] and self.table[index][0] != key:
             index = (index + 1) % len(table)
 
         table[index] = (key, val)
