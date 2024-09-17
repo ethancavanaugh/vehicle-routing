@@ -25,6 +25,12 @@ class OpenAddressHashTable:
             self.__resize()
         self.__insert(self.table, key, val)
 
+    # Returns the value of the specified key
+    # Raises KeyError if the key is not found
+    def __getitem__(self, key):
+        i = self.__find_index(key)
+        return self.table[i][1]
+
     # Deletes the item with the specified key
     # The table size will remain the same no matter how many items are removed
     # Raises KeyError if the key is not found
@@ -32,12 +38,6 @@ class OpenAddressHashTable:
         i = self.__find_index(key)
         self.table[i] = None
         self.size -= 1
-
-    # Returns the value of the specified key
-    # Raises KeyError if the key is not found
-    def __getitem__(self, key):
-        i = self.__find_index(key)
-        return self.table[i][1]
 
     # Doubles the capacity of the table and rehashes all existing items
     def __resize(self):
@@ -64,7 +64,7 @@ class OpenAddressHashTable:
         table[index] = (key, val)
 
     def __find_index(self, key):
-        index = key % len(self.table)
+        index = hash(key) % len(self.table)
         while self.table[index] and self.table[index][0] != key:
             index += 1
 
