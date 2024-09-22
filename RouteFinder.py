@@ -1,18 +1,22 @@
+from Package import Package
+
+
 class RouteFinder:
     def __init__(self, distance_table, addr_index_map):
         self.distance_table = distance_table
         self.addr_index_map = addr_index_map
 
-    # Find a locally optimal tour, operating on the addresses between start(inclusive) and end(exclusive)
-    def two_opt_tour(self, tour, start=0, end=None):
+    # Find a locally optimal tour from a list of packages
+    # Operates on the packages between start(inclusive) and end(exclusive)
+    def two_opt_tour(self, packages: list[Package], start=0, end=None):
         if end is None:
-            end = len(tour)
+            end = len(packages)
 
         # Calculate initial tour length
         length = 0
         for i in range(start + 1, end):
-            length += self.__distance_between(tour[i], tour[i-1])
-        print(tour)
+            length += self.__distance_between(packages[i], packages[i-1])
+        print([p.address for p in packages])
         print(length)
 
         # Test each possible swap of two edges, making any improving swap
@@ -21,17 +25,19 @@ class RouteFinder:
             improved = False
             for v1 in range(start, end - 2):
                 for v2 in range(v1 + 1, end - 1):
-                    swap_difference = self.__get_swap_difference(tour, v1, v2)
+                    swap_difference = self.__get_swap_difference(packages, v1, v2)
                     if swap_difference < 0:
                         improved = True
                         length += swap_difference
-                        tour = self.__swap_edges(tour, v1, v2)
+                        packages = self.__swap_edges(packages, v1, v2)
     
-        print(tour)
+        print([p.address for p in packages])
         print(length)
+        return packages
 
-    def __distance_between(self, addr1, addr2):
-        return self.distance_table[self.addr_index_map[addr1]][self.addr_index_map[addr2]]
+    # Return the distance between two package delivery addresses
+    def __distance_between(self, pkg1, pkg2):
+        return self.distance_table[self.addr_index_map[pkg1.address]][self.addr_index_map[pkg2.address]]
 
     # Returns the change in tour length if the edges starting at v1 and v2 are swapped
     def __get_swap_difference(self, tour, v1, v2):
