@@ -26,7 +26,7 @@ def load_distance_data(dist_csv: str) -> list:
     return distance_table
 
 
-# Returns a map of package id -> package object
+# Returns a map of package pkg_id -> package object
 def load_package_data(pkg_csv: str) -> OpenAddressHashTable:
     print("Loading package data...")
     pkg_map = OpenAddressHashTable()
