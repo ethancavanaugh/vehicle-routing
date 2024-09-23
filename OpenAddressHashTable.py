@@ -1,4 +1,4 @@
-# A simple hash table using open addressing
+# Hash table using open addressing
 class OpenAddressHashTable:
     INITIAL_SIZE = 16
 
@@ -42,6 +42,7 @@ class OpenAddressHashTable:
     def __len__(self):
         return self.size
 
+    # Return an unordered list of all values in the table
     def values(self):
         values = []
         for item in self.table:
@@ -78,7 +79,7 @@ class OpenAddressHashTable:
         while self.table[index] and self.table[index][0] != key:
             index += 1
 
-        #Key is not present if an empty index is found before the key
+        # Key is not present if an empty index is found before the key
         if not self.table[index]:
             raise KeyError
 

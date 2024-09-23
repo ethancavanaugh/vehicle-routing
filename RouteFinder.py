@@ -16,8 +16,7 @@ class RouteFinder:
         length = 0
         for i in range(start + 1, end):
             length += self.__distance_between(packages[i], packages[i-1])
-        print([p.address for p in packages])
-        print(length)
+        init_length = length
 
         # Test each possible swap of two edges, making any improving swap
         improved = True
@@ -31,8 +30,7 @@ class RouteFinder:
                         length += swap_difference
                         packages = self.__swap_edges(packages, v1, v2)
     
-        print([p.address for p in packages])
-        print(length)
+        print("2-opt algorithm complete, reduced distance from %.1f mi to %.1f mi!" % (init_length, length))
         return packages
 
     # Return the distance between two package delivery addresses
@@ -45,6 +43,7 @@ class RouteFinder:
         new_dist = self.__distance_between(tour[v1], tour[v2]) + self.__distance_between(tour[v1 + 1], tour[v2 + 1])
         return new_dist - cur_dist
 
+    # Swaps the edges beginning at v1 and v2
     def __swap_edges(self, tour, v1, v2):
         new_tour = tour[:v1 + 1]
         for i in range(v2, v1, -1):
