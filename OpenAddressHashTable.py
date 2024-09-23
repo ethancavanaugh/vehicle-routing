@@ -39,6 +39,9 @@ class OpenAddressHashTable:
         self.table[i] = None
         self.size -= 1
 
+    def __len__(self):
+        return self.size
+
     # Doubles the capacity of the table and rehashes all existing items
     def __resize(self):
         new_cap = 2 * len(self.table)
