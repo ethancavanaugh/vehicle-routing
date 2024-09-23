@@ -28,15 +28,10 @@ if __name__ == '__main__':
     truck2_packages = [HUB] + [package_map[i] for i in truck2_package_ids] + [HUB]
     truck3_packages = [HUB] + [package_map[i] for i in truck3_package_ids] + [HUB]
 
-    # Run each list of packages through the 2 opt algorithm to minimize the distance travelled
-    truck1_packages = route_finder.two_opt_tour(truck1_packages)
-    truck2_packages = route_finder.two_opt_tour(truck2_packages)
-    truck3_packages = route_finder.two_opt_tour(truck3_packages)
-
-    # Create truck objects
-    truck1 = Truck(1, truck1_packages, distance_table, addr_index_map)
-    truck2 = Truck(2, truck2_packages, distance_table, addr_index_map)
-    truck3 = Truck(3, truck3_packages, distance_table, addr_index_map)
+    # Create truck objects; Truck constructor automatically applies the two-opt algorithm
+    truck1 = Truck(1, truck1_packages, route_finder)
+    truck2 = Truck(2, truck2_packages, route_finder)
+    truck3 = Truck(3, truck3_packages, route_finder)
 
     # Truck 2 departs at 8:00 AM
     truck2_departure_time = datetime.combine(date.today(), time(8))
@@ -56,7 +51,7 @@ if __name__ == '__main__':
         print("m - Mileage data")
         print("ap - All package statuses")
         print("sp - Single package status")
-        print("h - help")
+        print("h - Help")
         print("q - Quit")
 
     # Obtains user inputted time and return it as a time object

@@ -1,16 +1,17 @@
 from datetime import *
 from Package import *
+from RouteFinder import RouteFinder
 
 
 class Truck:
     AVG_SPEED_MPH = 18
 
-    def __init__(self, truck_id: int, packages: list[Package], distance_table: list[list[int]], addr_index_map):
+    # Takes a list of package objects and applies the two-opt algorithm at the time of initialization
+    def __init__(self, truck_id: int, packages: list[Package], route_finder: RouteFinder):
         self.truck_id = truck_id
-        self.packages = packages
+        self.route_finder = route_finder
+        self.packages = route_finder.two_opt_tour(packages)
         self.total_distance = 0
-        self.distance_table = distance_table
-        self.addr_index_map = addr_index_map
 
     # Deliver all packages, updating their statuses and recording departure/delivery times
     def deliver_packages(self, departure_time: datetime):
@@ -23,7 +24,7 @@ class Truck:
         cur_time = departure_time
         for i in range(1, len(self.packages) - 1):
             package = self.packages[i]
-            dist = self.__distance_between(self.packages[i-1], self.packages[i])
+            dist = self.__distance_between(self.packages[i - 1], self.packages[i])
             transit_time = timedelta(hours=(dist / self.AVG_SPEED_MPH))
 
             self.total_distance += dist
@@ -39,4 +40,5 @@ class Truck:
 
     # Return the distance between two packages' delivery addresses
     def __distance_between(self, pkg1, pkg2):
-        return self.distance_table[self.addr_index_map[pkg1.address]][self.addr_index_map[pkg2.address]]
+        return (self.route_finder.distance_table[self.route_finder.addr_index_map[pkg1.address]]
+                                                [self.route_finder.addr_index_map[pkg2.address]])
