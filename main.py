@@ -13,7 +13,7 @@ HUB = Package(-1, "4001 South 700 East", None, None, None, None, None, "HUB ADDR
 
 if __name__ == '__main__':
     # ************************ LOAD CSV DATA ***************************
-    distance_table = distance_table = dataloaders.load_distance_data("WGUPS Distance Table.csv")
+    distance_table = dataloaders.load_distance_data("WGUPS Distance Table.csv")
     package_map = dataloaders.load_package_data("WGUPS Package Table.csv")
     addr_index_map = dataloaders.load_address_data("WGUPS Address Table.csv")
     route_finder = RouteFinder(distance_table, addr_index_map)
@@ -98,15 +98,18 @@ if __name__ == '__main__':
             print("Total mileage: %.1f mi" % (truck1.total_distance + truck2.total_distance + truck3.total_distance))
         elif selection == "ap":
             status_time = time_input()
-            if not status_time: continue
+            if not status_time:
+                continue
 
             for pkg in package_map.values():
                 print(pkg.get_status(status_time))
         elif selection == 'sp':
             pkg = package_id_input()
-            if not pkg: continue
+            if not pkg:
+                continue
             status_time = time_input()
-            if not status_time: continue
+            if not status_time:
+                continue
 
             print(pkg.get_status(status_time))
         elif selection == 'h':

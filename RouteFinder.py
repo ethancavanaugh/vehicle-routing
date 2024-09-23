@@ -44,7 +44,8 @@ class RouteFinder:
         return new_dist - cur_dist
 
     # Swaps the edges beginning at v1 and v2
-    def __swap_edges(self, tour, v1, v2):
+    @staticmethod
+    def __swap_edges(tour, v1, v2):
         new_tour = tour[:v1 + 1]
         for i in range(v2, v1, -1):
             new_tour.append(tour[i])
